@@ -1,8 +1,6 @@
 services:
   server:
-    build:
-      target: prod
-      context: .
+    image: "ghcr.io/samschooler/littleinvite-task-queue:main"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
