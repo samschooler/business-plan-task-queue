@@ -34,14 +34,14 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-  deploy-docker-compose:
-    needs: build-and-push-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Deploy with docker-compose
-        uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: compose.yaml
-          compose-file-name: compose.yaml
+  # deploy-docker-compose:
+  #   needs: build-and-push-image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #     - name: Deploy with docker-compose
+  #       uses: isbang/compose-action@v1.5.1
+  #       with:
+  #         compose-file: compose.yaml
+  #         compose-file-name: compose.yaml
