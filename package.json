@@ -6,7 +6,7 @@
   "scripts": {
     "prod": "source .env.local && export DATABASE_URL=$DATABASE_URL && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && docker compose up --build",
     "dev": "source .env.local && export DATABASE_URL=$DATABASE_URL && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && docker compose -f compose.dev.yaml up --build",
-    "start": "source .env.local && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && graphile-worker --connection $DATABASE_URL"
+    "start": "export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && graphile-worker --connection $DATABASE_URL"
   },
   "author": "",
   "license": "ISC",
