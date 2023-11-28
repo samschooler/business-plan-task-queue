@@ -25,19 +25,23 @@ module.exports = async function async(payload, helpers) {
       `New survey result created with id ${id} notifying ${email}!`
     );
 
+    helpers.logger.info(process.env.MAILGUN_API_KEY);
     const mailgun = new Mailgun(formData);
     const mg = mailgun.client({
       username: "api",
       key: process.env.MAILGUN_API_KEY,
     });
-    await mg.messages.create(
-      "sandbox4086e07217e54325b32803b5e115670c.mailgun.org",
-      {
-        from: "Little Invite <postmaster@sandbox4086e07217e54325b32803b5e115670c.mailgun.org>",
+    try {
+      await mg.messages.create("	mail.littleinvite.com", {
+        from: "Little Invite <sam@mail.littleinvite.com>",
         to: [email],
         subject: `New RSVP to your invite!`,
         text: "Looks like someone RSVP'd to your invite! Go check it out at https://littleinvite.com/dashboard",
-      }
-    );
+      });
+    } catch (e) {
+      helpers.logger.error(e);
+
+      throw e;
+    }
   }
 };

@@ -3,10 +3,7 @@ services:
     build:
       target: dev
       context: .
-    environment:
-      NODE_ENV: development
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-      NEXT_PUBLIC_SUPABASE_SERVICE_KEY: ${NEXT_PUBLIC_SUPABASE_SERVICE_KEY}
-      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
     network_mode: "host"
     restart: always
