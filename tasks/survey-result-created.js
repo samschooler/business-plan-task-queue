@@ -25,7 +25,6 @@ module.exports = async function async(payload, helpers) {
       `New survey result created with id ${id} notifying ${email}!`
     );
 
-    helpers.logger.info(process.env.MAILGUN_API_KEY);
     const mailgun = new Mailgun(formData);
     const mg = mailgun.client({
       username: "api",
