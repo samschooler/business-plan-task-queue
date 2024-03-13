@@ -3,7 +3,7 @@ const Mailgun = require("mailgun.js");
 const { createClient } = require("@supabase/supabase-js");
 const _importDynamic = new Function("modulePath", "return import(modulePath)");
 
-export const fetch = async function (...args) {
+const fetch = async function (...args) {
   const { default: fetch } = await _importDynamic("node-fetch");
   return fetch(...args);
 };
