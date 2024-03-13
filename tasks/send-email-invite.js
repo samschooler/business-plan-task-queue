@@ -84,7 +84,7 @@ module.exports = async function async(payload, helpers) {
       to: [email],
       subject: `Invite to ${inviteData.title} has been RSVP'd!`,
       text: `You RSVP'd to an invite! Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
-      attachment: new mailgun.Attachment({
+      attachment: new mg.Attachment({
         data: icsBuffer,
         filename: `${inviteData.title}.ics`,
       }),
