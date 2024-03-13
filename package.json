@@ -15,6 +15,7 @@
     "form-data": "^4.0.0",
     "graphile-worker": "^0.15.1",
     "mailgun.js": "^9.3.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "request": "^2.88.2"
   }
 }
