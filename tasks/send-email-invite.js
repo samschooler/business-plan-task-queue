@@ -42,6 +42,8 @@ module.exports = async function async(payload, helpers) {
   }
 
   const filledScreenKeys = Object.keys(data.results);
+  helpers.logger.info(`filledScreenKeys: ${filledScreenKeys}`);
+  helpers.logger.info(data.survey.screens);
   const emailScreenId = filledScreenKeys.filter(
     (screenId) => data.survey.screens[screenId].type === "email"
   );
