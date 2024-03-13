@@ -1,6 +1,7 @@
 const formData = require("form-data");
 const Mailgun = require("mailgun.js");
 const { createClient } = require("@supabase/supabase-js");
+const fetch = require("node-fetch");
 
 module.exports = async function async(payload, helpers) {
   const supabase = createClient(
@@ -27,7 +28,7 @@ module.exports = async function async(payload, helpers) {
 
   const { data: inviteData, error: inviteError } = await supabase
     .from("invite")
-    .select("title,short_code")
+    .select("id,title,short_code")
     .eq("survey", data.survey.id)
     .single();
 
@@ -62,6 +63,11 @@ module.exports = async function async(payload, helpers) {
     `New survey result created with id ${id} notifying ${email}!`
   );
 
+  const icsRes = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${invite.short_code}`
+  );
+  const icsBuffer = await response.buffer(); // Get response body as a Buffer
+
   const mailgun = new Mailgun(formData);
   const mg = mailgun.client({
     username: "api",
@@ -73,6 +79,13 @@ module.exports = async function async(payload, helpers) {
       to: [email],
       subject: `Invite to ${inviteData.title} has been RSVP'd!`,
       text: `You RSVP'd to an invite! Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
+      attachment: {
+        value: icsBuffer,
+        options: {
+          filename: `${inviteData.title}.ics`, // Optional: specify the filename
+          contentType: icsRes.headers.get("content-type"), // Optional: get content type from response headers
+        },
+      },
     });
   } catch (e) {
     helpers.logger.error(e);
