@@ -69,7 +69,7 @@ module.exports = async function async(payload, helpers) {
   );
 
   const icsRes = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${invite.short_code}`
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${inviteData.short_code}`
   );
   const icsBuffer = await response.buffer(); // Get response body as a Buffer
 
