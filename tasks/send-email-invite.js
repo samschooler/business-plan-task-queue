@@ -71,7 +71,7 @@ module.exports = async function async(payload, helpers) {
   const icsRes = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${inviteData.short_code}`
   );
-  const icsBuffer = await response.buffer(); // Get response body as a Buffer
+  const icsBuffer = await icsRes.buffer(); // Get response body as a Buffer
 
   const mailgun = new Mailgun(formData);
   const mg = mailgun.client({
