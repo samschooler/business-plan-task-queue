@@ -71,7 +71,7 @@ module.exports = async function async(payload, helpers) {
   const icsRes = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${inviteData.short_code}`
   );
-  const icsBuffer = await icsRes.buffer(); // Get response body as a Buffer
+  const icsBuffer = await icsRes.arrayBuffer(); // Get response body as a Buffer
 
   const mailgun = new Mailgun(formData);
   const mg = mailgun.client({
@@ -84,13 +84,10 @@ module.exports = async function async(payload, helpers) {
       to: [email],
       subject: `Invite to ${inviteData.title} has been RSVP'd!`,
       text: `You RSVP'd to an invite! Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
-      attachment: {
-        value: icsBuffer,
-        options: {
-          filename: `${inviteData.title}.ics`, // Optional: specify the filename
-          contentType: icsRes.headers.get("content-type"), // Optional: get content type from response headers
-        },
-      },
+      attachment: new mailgun.Attachment({
+        data: icsBuffer,
+        filename: `${inviteData.title}.ics`,
+      }),
     });
   } catch (e) {
     helpers.logger.error(e);
