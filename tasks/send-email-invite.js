@@ -16,6 +16,7 @@ module.exports = async function async(payload, helpers) {
     .single();
 
   if (error) {
+    helpers.logger.error(`Error on supabase survey_results request ${error}`);
     throw error;
   }
 
@@ -31,6 +32,7 @@ module.exports = async function async(payload, helpers) {
     .single();
 
   if (inviteError) {
+    helpers.logger.error(`Error on supabase invite request ${inviteError}`);
     throw inviteError;
   }
 
@@ -43,9 +45,14 @@ module.exports = async function async(payload, helpers) {
   const emailScreenId = filledScreenKeys.filter(
     (screenId) => data.survey.screens[screenId].type === "email"
   );
-  const email = data.results[emailScreenId];
+
+  helpers.logger.info(`emailScreenId: ${emailScreenId}`);
+  const email = emailScreenId[0] ? data.results[emailScreenId[0]] : null;
 
   if (!email) {
+    helpers.logger.info(
+      `No email found in survey results with id ${id} and screen id ${emailScreenId}`
+    );
     return;
   }
 
