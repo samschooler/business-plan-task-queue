@@ -85,6 +85,7 @@ module.exports = async function async(payload, helpers) {
       },
     });
   } catch (e) {
+    // how to handle this error?
     helpers.logger.error(e);
 
     throw e;
