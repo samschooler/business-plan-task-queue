@@ -17,7 +17,7 @@ module.exports = async function async(payload, helpers) {
   const { id } = payload;
   const { data, error } = await supabase
     .from("survey_results")
-    .select("survey(id,screens),results")
+    .select("survey(id,screens),results,complete")
     .eq("id", id)
     .single();
 
@@ -28,6 +28,11 @@ module.exports = async function async(payload, helpers) {
 
   if (!data) {
     helpers.logger.error(`No survey result found with id ${id}`);
+    return;
+  }
+
+  if (!data.complete) {
+    helpers.logger.error(`Survey result with id ${id} is not complete`);
     return;
   }
 
@@ -68,9 +73,17 @@ module.exports = async function async(payload, helpers) {
     `New survey result created with id ${id} notifying ${email}!`
   );
 
-  const icsRes = await fetch(
+  const icsResponse = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL}/api/event-ics/${inviteData.short_code}`
   );
+
+  // Ensure the fetch was successful
+  if (!icsResponse.ok) {
+    throw new Error(`Failed to fetch: ${response.statusText}`);
+  }
+
+  // Get ReadableStream from the response body
+  const webStream = icsResponse.body;
 
   const mailgun = new Mailgun(formData);
   const mg = mailgun.client({
@@ -84,9 +97,9 @@ module.exports = async function async(payload, helpers) {
       subject: `Invite to ${inviteData.title} has been RSVP'd!`,
       text: `You RSVP'd to an invite! Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
       attachment: {
-        data: await icsRes.arrayBuffer(),
+        data: webStream,
         filename: "invite.ics",
-        contentType: "text/calendar",
+        contentType: "application/ics",
       },
     });
   } catch (e) {
