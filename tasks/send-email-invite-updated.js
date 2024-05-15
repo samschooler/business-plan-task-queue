@@ -34,8 +34,12 @@ module.exports = async function async(payload, helpers) {
     .eq("id", id)
     .single();
 
+  helpers.logger.info(`requesting invite w id: ${id}`);
+
   if (inviteError) {
-    helpers.logger.error(`Error on supabase invite request ${inviteError}`);
+    helpers.logger.error(
+      `Error on supabase invite request ${JSON.stringify(inviteError)}`
+    );
     throw inviteError;
   }
 
@@ -48,7 +52,7 @@ module.exports = async function async(payload, helpers) {
 
   const { data, error } = await supabase
     .from("survey_results")
-    .select("results,complete")
+    .select("survey(id,screens),results,complete")
     .eq("survey", surveyId)
     .filter("complete", "eq", true);
 
@@ -90,6 +94,17 @@ module.exports = async function async(payload, helpers) {
     username: "api",
     key: process.env.MAILGUN_API_KEY,
   });
+
+  const emailObj = emails.reduce((acc, email) => {
+    acc[email] = {
+      email,
+      name: "Friend",
+    };
+    return acc;
+  }, {});
+
+  console.log(emailObj);
+
   try {
     await mg.messages.create("mail.littleinvite.com", {
       from: "Little Invite <sam@mail.littleinvite.com>",
@@ -101,6 +116,7 @@ module.exports = async function async(payload, helpers) {
         filename: "invite.ics",
         contentType: "application/ics",
       },
+      "recipient-variables": JSON.stringify(emailObj),
     });
   } catch (e) {
     // how to handle this error?

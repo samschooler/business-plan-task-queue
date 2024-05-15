@@ -15,6 +15,7 @@ module.exports = async function async(payload, helpers) {
   );
 
   const { id } = payload;
+  helpers.logger.info(`requesting survey_results id: ${id}`);
   const { data, error } = await supabase
     .from("survey_results")
     .select("survey(id,screens),results,complete")
@@ -22,7 +23,9 @@ module.exports = async function async(payload, helpers) {
     .single();
 
   if (error) {
-    helpers.logger.error(`Error on supabase survey_results request ${error}`);
+    helpers.logger.error(
+      `Error on supabase survey_results request ${JSON.stringify(error)}`
+    );
     throw error;
   }
 
@@ -36,6 +39,7 @@ module.exports = async function async(payload, helpers) {
     return;
   }
 
+  helpers.logger.info(`requesting invite w survey id: ${data.survey.id}`);
   const { data: inviteData, error: inviteError } = await supabase
     .from("invite")
     .select("id,title,short_code")
@@ -43,7 +47,9 @@ module.exports = async function async(payload, helpers) {
     .single();
 
   if (inviteError) {
-    helpers.logger.error(`Error on supabase invite request ${inviteError}`);
+    helpers.logger.error(
+      `Error on supabase invite request ${JSON.stringify(inviteError)}`
+    );
     throw inviteError;
   }
 
@@ -91,7 +97,7 @@ module.exports = async function async(payload, helpers) {
     key: process.env.MAILGUN_API_KEY,
   });
   try {
-    await mg.messages.create("mail.littleinvite.com", {
+    const res = await mg.messages.create("mail.littleinvite.com", {
       from: "Little Invite <sam@mail.littleinvite.com>",
       to: [email],
       subject: `Invite to ${inviteData.title} has been RSVP'd!`,
@@ -102,6 +108,8 @@ module.exports = async function async(payload, helpers) {
         contentType: "application/ics",
       },
     });
+
+    helpers.logger.info(`Email sent to ${email}`, res);
   } catch (e) {
     // how to handle this error?
     helpers.logger.error(e);
