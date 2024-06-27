@@ -16,7 +16,7 @@ module.exports = async function async(payload, helpers) {
   const { data: inviteData, error: inviteError } = await supabase
     .from("invite")
     .select(
-      "id, short_code, title, description, start_time, location_description, survey(*), timezone, updated_at, canceled_at"
+      "id, short_code, title, description, start_time, end_time, location_description, survey(*), timezone, updated_at, canceled_at"
     )
     .eq("id", inviteId)
     .single();

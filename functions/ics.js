@@ -5,6 +5,9 @@ exports.getICS = async (invite, icsDatum, canceled) => {
   const email = icsDatum.email;
   const rsvp = icsDatum.rsvp;
   const startTime = convertTZ(invite.start_time, invite.timezone);
+  const endTime = invite.end_time
+    ? convertTZ(invite.end_time, invite.timezone)
+    : null;
   const modifiedTime = new Date(invite.updated_at);
 
   const event = {
@@ -26,7 +29,6 @@ exports.getICS = async (invite, icsDatum, canceled) => {
       startTime.getMinutes(),
     ],
     startInputType: "utc",
-    duration: { hours: 1, minutes: 0 },
     title: invite.title,
     description: `${invite.description} || More Info: https://littleinvite.com/e/${invite.short_code}`,
     location: invite.location_description,
@@ -37,6 +39,22 @@ exports.getICS = async (invite, icsDatum, canceled) => {
 
     productId: "littleinvite/ics",
   };
+
+  if (endTime) {
+    event.end = [
+      endTime.getFullYear(),
+      endTime.getMonth() + 1,
+      endTime.getDate(),
+      endTime.getHours(),
+      endTime.getMinutes(),
+    ];
+    event.endInputType = "utc";
+  } else {
+    event.duration = {
+      hours: 1,
+      minutes: 0,
+    };
+  }
 
   if (email) {
     event.attendees =
