@@ -4,9 +4,20 @@ exports.getICSDataFromSurveyResults = (surveyResults) => {
     .filter((res) => res.email && (res.rsvp === "yes" || res.rsvp === "maybe"));
 };
 
+exports.getTextDataFromSurveyResults = (surveyResults) => {
+  return surveyResults
+    .map(exports.getTextDatumFromSurveyResult)
+    .filter((res) => res.email && (res.rsvp === "yes" || res.rsvp === "maybe"));
+};
+
 exports.getICSDatumFromSurveyResult = (surveyResult) => ({
   email: exports.getEmailFromSurveyResult(surveyResult),
   rsvp: exports.getRSVPFromSurveyResult(surveyResult),
+});
+
+exports.getTextDatumFromSurveyResult = (surveyResult) => ({
+  rsvp: exports.getRSVPFromSurveyResult(surveyResult),
+  phone: exports.getPhoneFromSurveyResult(surveyResult),
 });
 
 exports.getEmailFromSurveyResult = (surveyResult) => {
@@ -15,6 +26,16 @@ exports.getEmailFromSurveyResult = (surveyResult) => {
     (screenId) => surveyResult.survey.screens[screenId].type === "email"
   );
   return surveyResult.results[emailScreenId];
+};
+
+exports.getPhoneFromSurveyResult = (surveyResult) => {
+  const filledScreenKeys = Object.keys(surveyResult.results);
+  const phoneScreenId = filledScreenKeys.filter(
+    (screenId) =>
+      surveyResult.survey.screens[screenId].type === "phone" &&
+      surveyResult.survey.screens[screenId].verified === true
+  );
+  return surveyResult.results[phoneScreenId];
 };
 
 exports.getRSVPFromSurveyResult = (surveyResult) => {

@@ -1,5 +1,8 @@
 const { createClient } = require("@supabase/supabase-js");
-const { getICSDataFromSurveyResults } = require("../functions/invite");
+const {
+  getICSDataFromSurveyResults,
+  getTextDataFromSurveyResults,
+} = require("../functions/invite");
 
 module.exports = async function async(payload, helpers) {
   const supabase = createClient(
@@ -67,6 +70,25 @@ module.exports = async function async(payload, helpers) {
       },
       {
         queueName: "invite-updated-email",
+      }
+    );
+  }
+
+  const textData = getTextDataFromSurveyResults(data);
+
+  helpers.logger.info(
+    `Invite updated with id ${id} notifying ${textData.length} ppl!`
+  );
+
+  for (const textDatum of textData) {
+    await helpers.addJob(
+      `invite-updated-sms`,
+      {
+        inviteId: id,
+        textDatum,
+      },
+      {
+        queueName: "invite-updated-sms",
       }
     );
   }
