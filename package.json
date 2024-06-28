@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prod": "source .env && export TWILIO_API_KEY=$TWILIO_API_KEY && TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID && TWILIO_PHONE_NUMBER=$TWILIO_PHONE_NUMBER && MAILGUN_API_KEY=$MAILGUN_API_KEY && export DATABASE_URL=$DATABASE_URL && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && docker compose up --build",
-    "dev": "source .env && export TWILIO_API_KEY=$TWILIO_API_KEY && TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID && TWILIO_PHONE_NUMBER=$TWILIO_PHONE_NUMBER && MAILGUN_API_KEY=$MAILGUN_API_KEY && export DATABASE_URL=$DATABASE_URL && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && docker compose -f compose.dev.yaml up --build",
-    "start": "export TWILIO_API_KEY=$TWILIO_API_KEY && TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID && TWILIO_PHONE_NUMBER=$TWILIO_PHONE_NUMBER && MAILGUN_API_KEY=$MAILGUN_API_KEY && export NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL && export NEXT_PUBLIC_SUPABASE_SERVICE_KEY=$NEXT_PUBLIC_SUPABASE_SERVICE_KEY && graphile-worker --connection $DATABASE_URL"
+    "prod": "source .env && docker compose up --build",
+    "dev": "source .env && docker compose -f compose.dev.yaml up --build",
+    "start": "node -r dotenv/config ./node_modules/.bin/graphile-worker --connection $DATABASE_URL"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "dotenv": "^16.4.5",
     "form-data": "^4.0.0",
     "graphile-worker": "^0.15.1",
     "ics": "^3.7.2",

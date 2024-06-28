@@ -7,7 +7,7 @@ exports.getICSDataFromSurveyResults = (surveyResults) => {
 exports.getTextDataFromSurveyResults = (surveyResults) => {
   return surveyResults
     .map(exports.getTextDatumFromSurveyResult)
-    .filter((res) => res.email && (res.rsvp === "yes" || res.rsvp === "maybe"));
+    .filter((res) => res.phone && (res.rsvp === "yes" || res.rsvp === "maybe"));
 };
 
 exports.getICSDatumFromSurveyResult = (surveyResult) => ({
@@ -33,7 +33,7 @@ exports.getPhoneFromSurveyResult = (surveyResult) => {
   const phoneScreenId = filledScreenKeys.filter(
     (screenId) =>
       surveyResult.survey.screens[screenId].type === "phone" &&
-      surveyResult.survey.screens[screenId].verified === true
+      surveyResult.survey.screens[screenId].verify === true
   );
   return surveyResult.results[phoneScreenId];
 };
