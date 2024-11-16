@@ -35,7 +35,7 @@ exports.getICS = async (invite, icsDatum, canceled) => {
     url: `https://littleinvite.com/e/${invite.short_code}`,
     status: canceled ? "CANCELLED" : "CONFIRMED",
     busyStatus: "BUSY",
-    organizer: { name: "Little Invite", email: "sam@mail.littleinvite.com" },
+    organizer: { name: "Little Invite", email: "scheduler@littleinvite.com" },
 
     productId: "littleinvite/ics",
   };

@@ -32,7 +32,7 @@ const sendEmail = async (icsDatum, inviteData, helpers) => {
     });
 
     const res = await mg.messages.create("mail.littleinvite.com", {
-      from: "Little Invite <sam@mail.littleinvite.com>",
+      from: "Little Invite <scheduler@mail.littleinvite.com>",
       to: [icsDatum.email],
       subject:
         icsDatum.rsvp === "yes"

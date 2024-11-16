@@ -48,7 +48,7 @@ module.exports = async function async(payload, helpers) {
 
   try {
     const res = await mg.messages.create("mail.littleinvite.com", {
-      from: "Little Invite <sam@mail.littleinvite.com>",
+      from: "Little Invite <scheduler@mail.littleinvite.com>",
       to: [icsDatum.email],
       subject: inviteData.canceled_at
         ? `CANCELLED: ${inviteData.title}`
