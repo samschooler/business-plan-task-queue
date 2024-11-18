@@ -102,7 +102,7 @@ module.exports = async function async(payload, helpers) {
   helpers.logger.info(`requesting survey_results id: ${id}`);
   const { data, error } = await supabase
     .from("survey_results")
-    .select("survey(id,screens),results,complete")
+    .select("survey(id,screens),results,short_codecomplete")
     .eq("id", id)
     .single();
 
