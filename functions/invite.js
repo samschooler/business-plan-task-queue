@@ -13,11 +13,13 @@ exports.getTextDataFromSurveyResults = (surveyResults) => {
 exports.getICSDatumFromSurveyResult = (surveyResult) => ({
   email: exports.getEmailFromSurveyResult(surveyResult),
   rsvp: exports.getRSVPFromSurveyResult(surveyResult),
+  rsvpShortCode: surveyResult.short_code,
 });
 
 exports.getTextDatumFromSurveyResult = (surveyResult) => ({
   rsvp: exports.getRSVPFromSurveyResult(surveyResult),
   phone: exports.getPhoneFromSurveyResult(surveyResult),
+  rsvpShortCode: surveyResult.short_code,
 });
 
 exports.getEmailFromSurveyResult = (surveyResult) => {

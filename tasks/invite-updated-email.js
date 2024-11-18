@@ -54,8 +54,8 @@ module.exports = async function async(payload, helpers) {
         ? `CANCELLED: ${inviteData.title}`
         : `UPDATE: ${inviteData.title}`,
       text: inviteData.canceled_at
-        ? `This invite has been cancelled. We're sorry for the inconvenience.`
-        : `There has been a change on this invite. Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
+        ? `This invite has been cancelled.`
+        : `There has been a change on this invite. See change and change your RSVP here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`,
       attachment: {
         data: inviteStream,
         filename: "invite.ics",

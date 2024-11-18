@@ -37,7 +37,7 @@ module.exports = async function async(payload, helpers) {
 
   try {
     const res = await client.messages.create({
-      body: `Hey! ${inviteData.title} has been updated. Check it out at ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}`,
+      body: `Hey! ${inviteData.title} has been updated. Check it out at ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: textDatum.phone,
     });

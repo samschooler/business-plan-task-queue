@@ -36,11 +36,11 @@ const sendEmail = async (icsDatum, inviteData, helpers) => {
       to: [icsDatum.email],
       subject:
         icsDatum.rsvp === "yes"
-          ? `Invite to ${inviteData.title} has been RSVP'd!`
+          ? `You RSVP'd to ${inviteData.title}`
           : icsDatum.rsvp === "maybe"
           ? `INVITATION: Invite to ${inviteData.title}`
           : `DECLINED: Invite to ${inviteData.title}`,
-      text: `You RSVP'd to an invite! Go check it out at https://littleinvite.com/e/${inviteData.short_code}`,
+      text: `You RSVP'd to an invite! Change your RSVP here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`,
       attachment: {
         data: inviteStream,
         filename: "invite.ics",
@@ -71,8 +71,8 @@ const sendText = async (textDatum, inviteData, helpers) => {
     const res = await client.messages.create({
       body:
         textDatum.rsvp === "yes"
-          ? `${inviteData.title} has been RSVP'd. ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}`
-          : `${inviteData.title} has been RSVP'd. Make sure to confirm before the event. ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}`,
+          ? `You RSVP'd yes to${inviteData.title}. Change it here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`
+          : `${inviteData.title} has been RSVP'd. Make sure to say yes/no before the event here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: textDatum.phone,
     });
