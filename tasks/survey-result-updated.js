@@ -71,8 +71,8 @@ const sendText = async (textDatum, inviteData, helpers) => {
     const res = await client.messages.create({
       body:
         textDatum.rsvp === "yes"
-          ? `You RSVP'd yes to${inviteData.title}. Change it here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`
-          : `${inviteData.title} has been RSVP'd. Make sure to say yes/no before the event here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`,
+          ? `You RSVP'd yes to${inviteData.title}. Change it here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`
+          : `${inviteData.title} has been RSVP'd. Make sure to say yes/no before the event here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: textDatum.phone,
     });
