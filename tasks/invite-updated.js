@@ -69,7 +69,7 @@ module.exports = async function async(payload, helpers) {
         icsDatum,
       },
       {
-        queueName: "invite-updated-email",
+        jobKey: `invite-updated-email-${id}-${icsDatum.rsvpShortCode}`,
       }
     );
   }
@@ -88,7 +88,7 @@ module.exports = async function async(payload, helpers) {
         textDatum,
       },
       {
-        queueName: "invite-updated-sms",
+        jobKey: `invite-updated-sms-${id}-${textDatum.rsvpShortCode}`,
       }
     );
   }
