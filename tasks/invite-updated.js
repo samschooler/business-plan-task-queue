@@ -1,8 +1,5 @@
 const { createClient } = require("@supabase/supabase-js");
-const {
-  getICSDataFromSurveyResults,
-  getTextDataFromSurveyResults,
-} = require("../functions/invite");
+const { getICSDataFromSurveyResults } = require("../functions/invite");
 
 module.exports = async function async(payload, helpers) {
   const supabase = createClient(
@@ -14,7 +11,7 @@ module.exports = async function async(payload, helpers) {
   const { id } = payload;
   const { data: inviteData, error: inviteError } = await supabase
     .from("invite")
-    .select("id,title,short_code,survey(id,screens)")
+    .select("id,title,short_code,survey(id,screens),canceled_at")
     .eq("id", id)
     .single();
 
@@ -70,25 +67,6 @@ module.exports = async function async(payload, helpers) {
       },
       {
         jobKey: `invite-updated-email-${id}-${icsDatum.rsvpShortCode}`,
-      }
-    );
-  }
-
-  const textData = getTextDataFromSurveyResults(data);
-
-  helpers.logger.info(
-    `Invite updated with id ${id} notifying ${textData.length} ppl!`
-  );
-
-  for (const textDatum of textData) {
-    await helpers.addJob(
-      `invite-updated-sms`,
-      {
-        inviteId: id,
-        textDatum,
-      },
-      {
-        jobKey: `invite-updated-sms-${id}-${textDatum.rsvpShortCode}`,
       }
     );
   }

@@ -16,7 +16,8 @@ module.exports = async function async(payload, helpers) {
       "id,payload,type,invite(id, short_code, survey, timezone, updated_at, canceled_at)"
     )
     .eq("id", broadcastId)
-    .single();
+    .is("sent", null)
+    .maybeSingle();
 
   helpers.logger.info(broadcastData);
 
@@ -28,7 +29,6 @@ module.exports = async function async(payload, helpers) {
   }
 
   if (!broadcastData) {
-    helpers.logger.error(`No broadcast found with id ${broadcastId}`);
     return;
   }
 
@@ -68,26 +68,32 @@ module.exports = async function async(payload, helpers) {
       await helpers.addJob(
         `send-sms`,
         {
-          broadcastId,
+          broadcast: {
+            payload: broadcastPayload,
+            invite: broadcastData.invite.short_code,
+            id: broadcastId,
+            type: broadcastData.type,
+          },
           textDatum,
         },
         {
           queueName: "send-sms",
         }
       );
-      helpers.logger.info({
-        name: `send-sms-${broadcastId}-${textDatum.rsvpShortCode}`,
-        body: {
-          payload: broadcastPayload,
-          textDatum,
-        },
-        queue: {
-          jobKey: `send-sms-${broadcastId}-${textDatum.rsvpShortCode}`,
-        },
-      });
     }
   } else {
     helpers.logger.error(`Unknown broadcast type ${type}`);
     return;
+  }
+  const { error } = await supabase
+    .from("broadcast")
+    .update({ sent: new Date() })
+    .eq("id", broadcastId);
+
+  if (error) {
+    helpers.logger.error(
+      `Error on supabase broadcast request ${JSON.stringify(error)}`
+    );
+    throw error;
   }
 };

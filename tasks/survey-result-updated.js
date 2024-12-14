@@ -38,8 +38,8 @@ const sendEmail = async (icsDatum, inviteData, helpers) => {
         icsDatum.rsvp === "yes"
           ? `You RSVP'd to ${inviteData.title}`
           : icsDatum.rsvp === "maybe"
-          ? `INVITATION: Invite to ${inviteData.title}`
-          : `DECLINED: Invite to ${inviteData.title}`,
+          ? `INVITATION: ${inviteData.title}`
+          : `DECLINED: ${inviteData.title}`,
       text: `You RSVP'd to an invite! Change your RSVP here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${icsDatum.rsvpShortCode}`,
       attachment: {
         data: inviteStream,
@@ -71,7 +71,7 @@ const sendText = async (textDatum, inviteData, helpers) => {
     const res = await client.messages.create({
       body:
         textDatum.rsvp === "yes"
-          ? `You RSVP'd yes to${inviteData.title}. Change it here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`
+          ? `You RSVP'd yes to ${inviteData.title}. Change it here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`
           : `${inviteData.title} has been RSVP'd. Make sure to say yes/no before the event here: ${process.env.NEXT_PUBLIC_APP_SHORT_URL}/${inviteData.short_code}?i=${textDatum.rsvpShortCode}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: textDatum.phone,
@@ -104,7 +104,7 @@ module.exports = async function async(payload, helpers) {
     .from("survey_results")
     .select("survey(id,screens),results,short_code,complete")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     helpers.logger.error(
@@ -130,7 +130,7 @@ module.exports = async function async(payload, helpers) {
       "id, short_code, title, description, start_time, end_time, location_description, timezone, updated_at"
     )
     .eq("survey", data.survey.id)
-    .single();
+    .maybeSingle();
 
   if (inviteError) {
     helpers.logger.error(

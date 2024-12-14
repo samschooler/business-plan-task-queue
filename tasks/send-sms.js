@@ -13,37 +13,39 @@ module.exports = async function async(payload, helpers) {
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY
   );
 
-  const { broadcastId, textDatum } = payload;
+  const {
+    broadcast: { payload: broadcastPayload, invite: inviteShortCode },
+    textDatum,
+  } = payload;
 
-  helpers.logger.info(`requesting broadcast w id: ${broadcastId}`);
-  const { data: broadcastData, error: broadcastError } = await supabase
-    .from("broadcast")
-    .select(
-      "id,payload,type,invite(id, title, start_time, end_time, short_code, timezone, updated_at, canceled_at)"
-    )
-    .eq("id", broadcastId)
-    .single();
-
-  helpers.logger.info(broadcastData);
-
-  if (broadcastError) {
-    helpers.logger.error(
-      `Error on supabase broadcast request ${JSON.stringify(broadcastError)}`
-    );
-    throw broadcastError;
-  }
-
-  if (!broadcastData) {
-    helpers.logger.error(`No broadcast found with id ${broadcastId}`);
-    return;
-  }
-
-  let preppedBody = broadcastData.payload.body;
+  let preppedBody = broadcastPayload.body;
   // check if has template strings
   if (preppedBody && preppedBody.includes("{{")) {
-    const inviteData = broadcastData.invite;
+    const { data: inviteDataArr, error: inviteError } = await supabase
+      .from("invite")
+      .select(
+        "id, short_code, title, description, start_time, end_time, location_description, timezone, updated_at, canceled_at"
+      )
+      .eq("short_code", inviteShortCode);
 
-    helpers.logger.info(inviteData);
+    if (inviteError) {
+      helpers.logger.error(
+        `Error on supabase invite request ${JSON.stringify(inviteError)}`
+      );
+      throw inviteError;
+    }
+
+    if (!inviteDataArr.length === 0) {
+      helpers.logger.error(`No invite found with id ${inviteShortCode}`);
+      return;
+    }
+
+    const inviteData = inviteDataArr[0];
+
+    helpers.logger.info(
+      JSON.stringify(inviteData),
+      new Date(inviteData.start_time)
+    );
 
     preppedBody = preppedBody
       .replaceAll(
@@ -55,56 +57,66 @@ module.exports = async function async(payload, helpers) {
       .replaceAll("{{location}}", inviteData.location_description)
       .replaceAll(
         "{{start}}",
-        new Date(inviteData.start_time).toLocaleString(
-          "en-US",
-          {
-            timeZone: inviteData.timezone,
-            timeZoneName: "short",
-          },
-          {
-            timeZone: inviteData.timezone,
-          }
-        )
+        inviteData.start_time
+          ? new Date(inviteData.start_time).toLocaleString(
+              "en-US",
+              {
+                timeZone: inviteData.timezone,
+                timeZoneName: "short",
+              },
+              {
+                timeZone: inviteData.timezone,
+              }
+            )
+          : "<no start time>"
       )
       .replaceAll(
         "{{end}}",
-        new Date(inviteData.end_time).toLocaleString(
-          "en-US",
-          {
-            timeZone: inviteData.timezone,
-            timeZoneName: "short",
-          },
-          {
-            timeZone: inviteData.timezone,
-          }
-        )
+        inviteData.end_time
+          ? new Date(inviteData.end_time).toLocaleString(
+              "en-US",
+              {
+                timeZone: inviteData.timezone,
+                timeZoneName: "short",
+              },
+              {
+                timeZone: inviteData.timezone,
+              }
+            )
+          : "<no end time>"
       )
       // replace with just the time
       .replaceAll(
         "{{start_time}}",
-        new Date(inviteData.start_time).toLocaleTimeString("en-US", {
-          timeZone: inviteData.timezone,
-          timeZoneName: "short",
-        })
+        inviteData.start_time
+          ? new Date(inviteData.start_time).toLocaleTimeString("en-US", {
+              timeZone: inviteData.timezone,
+              timeZoneName: "short",
+            })
+          : "<no start time>"
       )
       .replaceAll(
         "{{end_time}}",
-        new Date(inviteData.end_time).toLocaleTimeString("en-US", {
-          timeZone: inviteData.timezone,
-          timeZoneName: "short",
-        })
+        inviteData.end_time
+          ? new Date(inviteData.end_time).toLocaleTimeString("en-US", {
+              timeZone: inviteData.timezone,
+              timeZoneName: "short",
+            })
+          : "<no end time>"
       )
       .replaceAll(
         "{{relative_start}}",
-        formatDistanceToNow(inviteData.start_time, {
-          addSuffix: true,
-          includeSeconds: false,
-        })
+        inviteData.start_time
+          ? formatDistanceToNow(new Date(inviteData.start_time), {
+              addSuffix: true,
+              includeSeconds: false,
+            })
+          : "<no start time>"
       );
   }
 
   helpers.logger.info(`preppedBody: ${preppedBody}`);
-  helpers.logger.info(`body: ${broadcastData.payload.body}`);
+  helpers.logger.info(`body: ${broadcastPayload.body}`);
 
   try {
     const res = await client.messages.create({
