@@ -1,6 +1,6 @@
 services:
   server:
-    image: "ghcr.io/samschooler/littleinvite-task-queue:main"
+    image: "ghcr.io/samschooler/business-plan-task-queue:main"
     env_file:
       - .env
     restart: always
