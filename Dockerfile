@@ -29,7 +29,9 @@ CMD ["sh", "-c", "npm run build:watch & nodemon dist/index.js"]
 FROM base as prod
 
 # Install production dependencies and build the application
-RUN npm ci --omit=dev && npm run build
+RUN npm ci --omit=dev
+RUN npm i ts-node
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
