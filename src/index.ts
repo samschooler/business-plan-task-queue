@@ -8,6 +8,26 @@ async function main() {
     taskDirectory: `${__dirname}/tasks`,
   });
 
+  runner.events.on("job:success", ({ worker, job }) => {
+    console.log(`Hooray! Worker ${worker.workerId} completed job ${job.id}`);
+  });
+
+  runner.events.on("job:failed", ({ worker, job }) => {
+    console.log(`Boo! Worker ${worker.workerId} failed job ${job.id}`);
+  });
+
+  runner.events.on("pool:listen:connecting", ({ workerPool }) => {
+    console.log(`Worker pool connecting`);
+  });
+
+  runner.events.on("pool:listen:success", ({ workerPool }) => {
+    console.log(`Worker pool listening`);
+  });
+
+  runner.events.on("pool:listen:error", ({ error }) => {
+    console.error(`Worker pool listening error: ${error}`);
+  });
+
   // Immediately await (or otherwise handled) the resulting promise, to avoid
   // "unhandled rejection" errors causing a process crash in the event of
   // something going wrong.

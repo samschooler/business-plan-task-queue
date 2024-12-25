@@ -7,6 +7,7 @@ import { requestCoreProductFeatures } from "../functions/request-core-product-fe
 import { requestCoreRevenueModel } from "../functions/request-core-revenue-model";
 import { requestRevenueProjection } from "../functions/request-revenue-projection";
 import { requestCompanySentence } from "../functions/request-company-sentence";
+import { requestFeatureDetails } from "../functions/request-feature-details";
 
 export default async function async(payload: {
   short_code: string;
@@ -18,6 +19,8 @@ export default async function async(payload: {
   );
 
   const { short_code } = payload;
+
+  console.log(`[plan-created] ${short_code}`);
 
   const { data, error } = await supabase
     .from("plan")
@@ -73,6 +76,15 @@ export default async function async(payload: {
   await supabase
     .from("plan")
     .update({ core_product_features: coreProductFeatures })
+    .eq("short_code", short_code);
+
+  const featurePrioritization = await requestFeatureDetails(
+    coreProductFeatures.features
+  );
+
+  await supabase
+    .from("plan")
+    .update({ feature_prioritization: featurePrioritization })
     .eq("short_code", short_code);
 
   const coreRevenueModel = await requestCoreRevenueModel(overview);

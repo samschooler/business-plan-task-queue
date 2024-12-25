@@ -1,61 +1,38 @@
-# syntax=docker/dockerfile:1
-
+# Use the official Node.js image as a base
 ARG NODE_VERSION=18.0.0
-
-# Base image with Node.js
 FROM node:${NODE_VERSION}-alpine as base
-WORKDIR /usr/src/app
-EXPOSE 3000
 
-# Install build tools for native dependencies
 RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Development stage
-FROM base as dev
-RUN --mount=type=cache,target=/root/.npm \
-    npm install -g typescript ts-node
+# Set the working directory
+WORKDIR /usr/src/app
 
 # Install dependencies
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --include=dev
+COPY package*.json tsconfig.json ./
 
-# create dist folder if it doesn't exist
-RUN mkdir -p dist
-
-COPY ./graphile.config.ts ./graphile.config.ts
-
-# make it owned by node
-RUN chown -R node:node dist
-
-# Switch to non-root user for security
-USER node
-
-# Copy the entire source code for development
+# Copy the application code
 COPY . .
 
+# Install tools for development in a separate stage
+FROM base as dev
 
-CMD npm run build
+RUN npm install
+RUN npm install -g nodemon
 
-CMD npm run start
+# Expose the application port
+EXPOSE 3000
 
-# Production stage
+# Start TypeScript watcher and Node.js runner
+CMD ["sh", "-c", "npm run build:watch & nodemon dist/index.js"]
+
+# Final production build stage
 FROM base as prod
-ENV NODE_ENV production
 
-# Install only production dependencies
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+# Install production dependencies and build the application
+RUN npm ci --omit=dev && npm run build
 
-# Build TypeScript files to JavaScript
-COPY . .
-RUN npm run build
+# Expose the application port
+EXPOSE 3000
 
-# Switch to non-root user for security
-USER node
-
-# Run the application
-CMD ["npm", "start"]
+# Start the production server
+CMD ["node", "dist/index.js"]

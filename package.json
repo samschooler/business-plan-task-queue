@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "docker": "source .env && docker compose up --build",
+    "docker:dev": "docker compose -f compose.dev.yaml up --build",
     "build": "tsc",
-    "prod": "source .env && docker compose up --build",
-    "dev": "docker compose -f compose.dev.yaml up --build",
-    "watch": "tsc --watch",
-    "start": "node ./dist/index.js"
+    "build:watch": "tsc --watch",
+    "start:dev": "nodemon dist/index.js",
+    "start": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,12 +24,12 @@
     "node-fetch": "^3.3.2",
     "openai": "^4.77.0",
     "pg-sql2": "^4.13.0",
-    "react-day-picker": "^9.4.4",
     "request": "^2.88.2",
     "twilio": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
