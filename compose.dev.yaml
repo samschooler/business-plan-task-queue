@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      target: prod
+      target: dev
     volumes:
       - ./src:/usr/src/app/src # Sync source code
       - ./dist:/usr/src/app/dist # Sync compiled output
