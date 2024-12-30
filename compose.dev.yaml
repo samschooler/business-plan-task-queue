@@ -8,8 +8,6 @@ services:
       - ./dist:/usr/src/app/dist # Sync compiled output
       - ./tsconfig.json:/usr/src/app/tsconfig.json # Sync tsconfig.json
       - /usr/src/app/node_modules # Ensure node_modules remain container-local
-    ports:
-      - "3000:3000"
     environment:
       NODE_ENV: development
     env_file:

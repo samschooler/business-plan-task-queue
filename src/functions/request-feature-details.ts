@@ -1,4 +1,17 @@
+import { z } from "zod";
 import { openai } from "../utils/openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+
+const FeatureDetailsSchema = z.object({
+  features: z.array(
+    z.object({
+      featureName: z.string(),
+      details: z.string(),
+      impact: z.number(),
+      easeOfImplementation: z.number(),
+    })
+  ),
+});
 
 function createPrioritizationPrompt(
   features: { featureName: string; description: string }[]
@@ -52,7 +65,7 @@ export const requestFeatureDetails = async (
     ],
     temperature: 0.7,
     max_tokens: 1500,
-    response_format: { type: "json_object" }, // Expect JSON array as output
+    response_format: zodResponseFormat(FeatureDetailsSchema, "feature_details"),
   });
 
   // Parse and sort by impact vs ease of implementation

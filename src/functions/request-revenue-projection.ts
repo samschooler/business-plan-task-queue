@@ -1,5 +1,16 @@
+import { z } from "zod";
 import { RevenueStream } from "../types";
 import { openai } from "../utils/openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+
+const RevenueProjectionSchema = z.object({
+  years: z.array(
+    z.object({
+      projection: z.number(),
+      reasoning: z.string(),
+    })
+  ),
+});
 
 function createProjectionPrompt(revenueStreams: RevenueStream[]): string {
   // Build the prompt by summarizing the revenue streams
@@ -45,7 +56,10 @@ export const requestRevenueProjection = async (coreRevenueModel: {
     ],
     temperature: 0.7,
     max_tokens: 1000,
-    response_format: { type: "json_object" },
+    response_format: zodResponseFormat(
+      RevenueProjectionSchema,
+      "revenue_projection"
+    ),
   });
 
   return JSON.parse(revProjectionExec.choices[0].message.content ?? "{}") as {

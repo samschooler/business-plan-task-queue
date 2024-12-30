@@ -1,4 +1,15 @@
+import { z } from "zod";
 import { openai } from "../utils/openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+
+const CoreProductFeaturesSchema = z.object({
+  features: z.array(
+    z.object({
+      featureName: z.string(),
+      description: z.string(),
+    })
+  ),
+});
 
 export const requestCoreProductFeatures = async (overview: string) => {
   const coreProductFeaturesExec = await openai.chat.completions.create({
@@ -16,7 +27,10 @@ export const requestCoreProductFeatures = async (overview: string) => {
     ],
     temperature: 0.7,
     max_tokens: 1000,
-    response_format: { type: "json_object" },
+    response_format: zodResponseFormat(
+      CoreProductFeaturesSchema,
+      "core_product_features"
+    ),
   });
 
   return JSON.parse(

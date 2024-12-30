@@ -1,4 +1,15 @@
 import { openai } from "../utils/openai";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
+
+const TargetAudienceSchema = z.object({
+  audiences: z.array(
+    z.object({
+      audienceName: z.string(),
+      description: z.string(),
+    })
+  ),
+});
 
 export const requestTargetAudience = async (overview: string) => {
   const possibleTargetAudienceExec = await openai.chat.completions.create({
@@ -16,7 +27,7 @@ export const requestTargetAudience = async (overview: string) => {
     ],
     temperature: 0.7,
     max_tokens: 1000,
-    response_format: { type: "json_object" },
+    response_format: zodResponseFormat(TargetAudienceSchema, "target_audience"),
   });
 
   return JSON.parse(
